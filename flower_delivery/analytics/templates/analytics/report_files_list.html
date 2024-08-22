@@ -1,0 +1,49 @@
+{% extends 'admin_panel/admin_layout.html' %}
+
+{% block title %}
+    <title>Список сохраненных отчетов</title>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mt-5 mb-5">Список сохраненных отчетов за предыдущие дни</h2>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="container text-center mt-5">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Дата отчета</th>
+                <th>Название файла</th>
+                <th>Скачать</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report.report_date }}</td>
+                <td>{{ report.file_name }}</td>
+                <td>
+                    <a href="{% url 'analytics:download_report' report %}" class="btn btn-primary">Скачать</a>
+                </td>
+                <td>
+                    <a href="{% url 'analytics:delete_report' report %}" class="btn btn-danger" onclick="return confirmDelete()">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+function confirmDelete() {
+    return confirm("Вы уверены, что хотите удалить этот файл? Это действие необратимо.");
+}
+</script>
+
+{% endblock %}
+

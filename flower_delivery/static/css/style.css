@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.img {
+    padding: 100;
+    margin: 100:
+}
+
+.far.fa-star {
+        color: orange;
+}
+
+.fas.fa-star {
+        color: orange;
+}
+
+.fas.fa-star-half-alt {
+        color: orange;
+}
+
+.white-text {
+        color: white;
+    }
+
+.red-text {
+        color: red;
+    }
+
+.aside {
+        position: fixed; /* Фиксируем aside */
+        top: 0;
+        left: 0;
+        height: 100%; /* Высота на всю страницу */
+        background-color: #f8f9fa; /* Цвет фона панели */
+        padding-top: 60px; /* Отступ сверху для содержания */
+        overflow-y: auto; /* Прокрутка, если содержимое больше экрана */
+    }

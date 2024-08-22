@@ -1,0 +1,18 @@
+{% load multiplication %}
+
+{% for item in cart.items.all %}
+<tr>
+    <td>
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
+        <strong>{{ item.product.name }}</strong>
+    </td>
+    <td>
+        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" class="form-control quantity-input" style="width: 80px;">
+    </td>
+    <td>
+        <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="{{ item.id }}"><strong><i class="fas fa-trash"></i></strong></button>
+    </td>
+    <td>{{ item.product.price }} руб.</td>
+    <td><strong>{{ item.get_total_price }} руб.</strong></td>
+</tr>
+{% endfor %}

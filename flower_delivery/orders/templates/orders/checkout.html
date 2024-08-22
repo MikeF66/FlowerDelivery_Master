@@ -1,0 +1,89 @@
+{% extends 'orders/order_layout.html' %}
+{% block title %}
+<title>Оформить заказ</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h2>Оформить заказ</h2>
+            <h5>Измените Имя получателя, его Телефон и Адрес, если букет нужно доставить в подарок другому человеку</h5>
+            {% if is_late_order %}
+                <div class="alert alert-warning" style="font-size: 18px;">
+                    <p>К сожалению, обработка заказов осуществляется до 19:00, поэтому мы не сможем выполнить доставку сегодня.</p>
+                    <p>Но завтра мы готовы доставить ваш заказ. Мы свяжемся с вами завтра. Хорошего вечера! Спасибо за понимание.</p>
+                </div>
+            {% endif %}
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Заказчик</h4>
+                    <div class="form-group">
+                        <label for="username">Имя</label>
+                        <input type="text" class="form-control" id="username" value="{{ request.user.username }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Телефон</label>
+                        <input type="text" class="form-control" id="phone" value="{{ request.user.phone }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{ request.user.email }}" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Получатель</h4>
+                    <div class="form-group">
+                        <label for="recipient_name">Имя</label>
+                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" value="{{ request.user.username }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient_phone">Телефон</label>
+                        <input type="text" class="form-control" id="recipient_phone" name="recipient_phone" value="{{ request.user.phone }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery_address">Адрес</label>
+                        <input type="text" class="form-control" id="delivery_address" name="delivery_address" value="{{ request.user.address }}">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Оформить заказ</button>
+        </form>
+
+        <h4 class="mt-5">Товары в заказе</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                    <th>Цена</th>
+                    <th>Стоимость</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items.all %}
+                <tr>
+                    <td>
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
+                        <strong>{{ item.product.name }}</strong>
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }} руб.</td>
+                    <td><strong>{{ item.get_total_price }} руб.</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4 class="text-right">Общая сумма: {{ cart.get_total_cost }} руб.</h4>
+    </div>
+{% endblock %}

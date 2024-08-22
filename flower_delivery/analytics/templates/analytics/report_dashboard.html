@@ -1,0 +1,28 @@
+{% extends 'admin_panel/admin_layout.html' %}
+
+{% block title %}
+    <title>Панель отчетов о продажах</title>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mt-5 mb-5">Панель отчетов о продажах</h2>
+<div class="container text-center mt-5">
+    <div class="row mt-4 mb-4 justify-content-center">
+        <div class="col-md-8 mb-5">
+            <a href="{% url 'analytics:daily_sales_report' %}" class="btn btn-primary btn-lg btn-block">
+                Отчет о продажах за сегодняшний день
+            </a>
+        </div>
+        <div class="col-md-8 mb-5">
+            <a href="{% url 'analytics:report_files_list' %}" class="btn btn-primary btn-lg btn-block">
+                Файлы отчетов по продажам за предыдущие дни
+            </a>
+        </div>
+        <div class="col-md-8 mb-5">
+            <a href="{% url 'analytics:monthly_sales_report' %}" class="btn btn-primary btn-lg btn-block">
+                Отчет о продажах за месяц
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

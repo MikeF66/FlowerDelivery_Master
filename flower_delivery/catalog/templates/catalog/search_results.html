@@ -1,0 +1,87 @@
+{% extends 'catalog/layout.html' %}
+
+{% block extra_css %}
+<style>
+    .product-card {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s ease;
+    }
+    .product-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    .product-card a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        width: 100%;
+    }
+    .product-card a:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+    .product-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-right: 20px;
+    }
+    .product-details {
+        flex: 1;
+    }
+    .product-details h5 {
+        margin: 0 0 10px 0;
+    }
+    .product-details p {
+        margin: 5px 0;
+    }
+    .product-price {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block title %}
+    <title>Результаты поиска</title>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <h2 class="text-center mb-5">Результаты поиска</h2>
+    {% if products %}
+    <div class="row">
+        <div class="col-12">
+            {% for product in products %}
+            <div class="product-card">
+                <a href="{% url 'catalog:product_detail' product.id %}">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <h5 class="mb-3">{{ product.name }}</h5>
+                            <p class="product-price">Цена {{ product.price }} руб.</p>
+                        </div>
+                        <div class="col-md-6">
+                            {{ product.short_description }}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center">По вашему запросу ничего не найдено.</p>
+    {% endif %}
+</div>
+{% endblock %}

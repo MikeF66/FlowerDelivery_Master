@@ -1,0 +1,79 @@
+{% extends 'orders/order_layout.html' %}
+
+{% load multiplication %}
+
+{% block title %}
+    <title>Корзина</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Ваша корзина</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if cart.items.exists %}
+        <h5 class="text-center">{{ request.user.username }}, для оформления заказа, пожалуйста, нажмите кнопку "Оформить заказ".</h5>
+        <h5 class="text-center">Если вы хотите выбрать еще один букет, пожалуйста, нажмите кнопку "Добавить букет".</h5>
+    {% else %}
+        <h5 class="text-center">{{ request.user.username }}, в вашей корзине ничего нет. Для выбора букета вернитесь в каталог, пожалуйста.</h5>
+    {% endif %}
+    <form method="post" action="{% url 'orders:update_cart' %}?page={{ page_number }}" id="cart-form">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                    <th>Удалить</th>
+                    <th>Цена</th>
+                    <th>Стоимость</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                {% include 'orders/cart_contents.html' %}
+            </tbody>
+        </table>
+    </form>
+
+    <a href="{% url 'catalog:home' %}?page={{ page_number }}" class="btn btn-primary">Добавить букет</a>
+    {% if cart.items.exists %}
+        <a href="{% url 'orders:checkout' %}" class="btn btn-success">Оформить заказ</a>
+    {% else %}
+        <p>Добавьте букет, чтобы мы могли порадовать вас или ваших любимых.</p>
+    {% endif %}
+</div>
+
+    {% block extra_js %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('cart-form');
+        const cartItems = document.getElementById('cart-items');
+
+        cartItems.addEventListener('change', function(e) {
+            if (e.target.classList.contains('quantity-input')) {
+                form.submit();
+            }
+        });
+
+        cartItems.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-item')) {
+                e.preventDefault();
+                const itemId = e.target.getAttribute('data-item-id');
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'remove_' + itemId;
+                input.value = 'true';
+                form.appendChild(input);
+                form.submit();
+            }
+        });
+    });
+    </script>
+    {% endblock %}
+
+{% endblock %}

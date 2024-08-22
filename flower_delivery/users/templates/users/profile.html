@@ -1,0 +1,45 @@
+{% extends 'users/user_layout.html' %}
+
+{% block title %}
+    <title>Профиль</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">{{ request.user.username }}, это ваш профиль</h2>
+
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group col-md-8 mx-auto">
+            <label for="{{ field.id_for_label }}">
+                {% if field.name == 'phone' %}
+                    Телефон
+                {% elif field.name == 'address' %}
+                    Адрес
+                {% else %}
+                    {{ field.label|capfirst }}
+                {% endif %}
+            </label>
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control {% if field.errors %}is-invalid{% endif %}" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}">
+            {% for error in field.errors %}
+            <div class="invalid-feedback">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-primary">Обновить профиль</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

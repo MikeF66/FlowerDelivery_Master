@@ -1,0 +1,113 @@
+{% extends 'catalog/layout.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+    <title>{{ product.name }}</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-4">
+    <div class="row">
+        <!-- Колонка с изображением -->
+        <div class="col-lg-6">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" data-toggle="modal" data-target="#productImageModal">
+            <!-- Модальное окно для изображения -->
+            <div class="modal fade" id="productImageModal" tabindex="-1" role="dialog" aria-labelledby="productImageModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="height: 85%; margin: auto; display: block;">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Колонка с информацией о товаре -->
+        <div class="col-lg-6">
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">{{ product.short_description }}</p>
+            <p class="font-weight-bold">Цена: {{ product.price }} руб.</p>
+            <p>{{ product.description }}</p>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <a href="{{ referer_url }}" class="btn btn-primary mr-5">Вернуться</a>
+                {% if user.is_authenticated %}
+                    {% if not user.is_staff %}
+                        <a href="{% url 'orders:add_to_cart' product.id %}?page={{ page_number }}" class="btn btn-success ml-5">В корзину</a>
+                    {% endif %}
+                    {% if user.is_staff %}
+                        <form action="{% url 'catalog:edit_product' product.id %}" method="get" style="display:inline;">
+                            <input type="hidden" name="page" value="{{ page_number }}">
+                            <button type="submit" class="btn btn-warning mr-5">Редактировать товар</button>
+                        </form>
+                        <form action="{% url 'catalog:delete_product' product.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-danger ml-5" data-toggle="modal" data-target="#confirmDeleteModal">Удалить</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div>
+                <h5 class="ml-5 mt-4">Отзывы</h5>
+                <div>
+                    {% for review in product.reviews.all %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <ul class="list-unstyled">
+                                    <li>{{ review.rating|star_rating }}</li>
+                                    <li><span style="font-size: 12px;" class= "ml-3">{{ review.created_at|date:"d.m.Y" }}</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-9">
+                                 <ul class="list-unstyled">
+                                    <li><strong>{{ review.user.username }}:</strong></li>
+                                    <li>{{ review.comment }}</li>
+                                 </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить товар "{{ product.name }}"? Это действие необратимо.
+                <!-- Вывод ошибок при удалении -->
+                {% if form.errors %}
+                    <div class="alert alert-danger mt-3">
+                        Ошибка при удалении товара:
+                        <ul>
+                            {% for error in form.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <form action="{% url 'catalog:delete_product' product.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

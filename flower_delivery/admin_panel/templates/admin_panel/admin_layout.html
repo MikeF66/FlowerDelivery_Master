@@ -1,0 +1,112 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    {% block title %}
+    <title class="text-center">{{ caption }}</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<main class="flex-grow-1 mb-4">
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 pt-5">
+                <h4 class="text-center"><strong>Flower Delivery</strong></h4>
+                <h5 class="text-center">доставка цветов</h5>
+                <img src="{% static 'images/flower.jpg' %}" alt="flower" class="img-fluid rounded-circle mb-3">
+                {% if user.is_staff %}
+                <div>
+                    <ul>
+                        <li><a href="{% url 'catalog:home' %}">Товары</a></li>
+                        <li><a href="{% url 'admin_panel:admin_orders' %}">Заказы</a></li>
+                        <li><a href="{% url 'analytics:report_dashboard' %}">Аналитика</a></li>
+                        <li><a href="{% url 'admin_panel:admin_users' %}">Пользователи</a></li>
+                    </ul>
+                </div>
+                <div class="mb-5">
+                    <ul>
+                        <li><a href="{% url 'users:profile' %}">Профиль</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <ul>
+                        <li><a href="{% url 'users:logout' %}">Выход</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </aside>
+            <main class="col-md-9 col-lg-10">
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+    </main>
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="footer-section about">
+                        <h3>О нас</h3>
+                        <p>Flower Delivery. Мы доставляем радость вам и вашим любимым.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-section links">
+                        <h3>Полезные ссылки</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    <li><a href="{% url 'catalog:home' %}" class="text-white">Каталог</a></li>
+                                    <li><a href="" class="text-white">Как выбрать букет</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                   {% if user.is_authenticated %}
+                                        {% if not user.is_staff %}
+                                            <li><a href="{% url 'orders:view_cart' %}" class="text-white">Корзина</a></li>
+                                        {% endif %}
+                                        <li><a href="{% url 'users:profile' %}" class="text-white">Профиль</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-section contact">
+                        <h3>Контакты</h3>
+                        <ul class="list-unstyled">
+                            <li>Email: info@flowerdelivery.com</li>
+                            <li>Телефон: +7 (912) 345-67-89</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom text-center mt-4">
+                <p>&copy; 2024 Flower Delivery. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Подключение jQuery и Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Место для дополнительных скриптов -->
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

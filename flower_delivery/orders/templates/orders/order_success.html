@@ -1,0 +1,19 @@
+{% extends 'orders/order_layout.html' %}
+
+{% block title %}
+    <title>Заказ успешно оформлен</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h2 class="mb-4">{{ request.user.username }}, ваш <strong>Заказ № {{ order.id }}</strong> успешно оформлен!</h2>
+        {% if is_late_order %}
+            <p>Ваш заказ получен после 19:00, поэтому мы не сможем доставить его сегодня. Спасибо за понимание.</p>
+            <p class="mb-5">Но завтра мы готовы доставить ваш заказ. Мы свяжемся с вами завтра. Хорошего вечера!</p>
+        {% else %}
+            <p class="mb-5">Спасибо за ваш заказ. Мы свяжемся с вами в ближайшее время для подтверждения.</p>
+        {% endif %}
+
+        <a href="{% url 'catalog:home' %}" class="btn btn-primary">Вернуться в каталог</a>
+    </div>
+{% endblock %}

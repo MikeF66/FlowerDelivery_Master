@@ -1,0 +1,119 @@
+{% extends 'catalog/layout.html' %}
+{% load custom_filters %}
+
+{% block extra_css %}
+<style>
+    .card-img-top {
+        width: 100%;  /* Изображение занимает всю ширину карточки */
+        height: auto; /* Высота изображения зависит от ширины */
+        object-fit: cover;
+        border-radius: 20px;
+        padding: 10px;
+    }
+    .card {
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    btn-group .btn {
+        flex: 1 1 auto;
+        margin: 5px 0; /* Отступы между кнопками на малых экранах */
+    }
+
+    @media (min-width: 768px) {
+        .btn-group .btn {
+            flex: initial; /* Отключаем растяжение кнопок на больших экранах */
+            margin: 0; /* Убираем отступы между кнопками на больших экранах */
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}
+    <title>Каталог</title>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <h2 class="text-center mb-2">Каталог</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="text-center mb-1">Уважаемые клиенты, ваши заказы обрабатываются с 10:00 до 19:00.</h5>
+        <form method="GET" action="{% url 'catalog:product_search' %}" class="form-inline">
+            <input type="text" name="q" class="form-control" placeholder="Поиск товаров...">
+            <button type="submit" class="btn btn-outline-primary ml-2">Искать</button>
+        </form>
+
+    </div>
+    <h5 class="mb-4">Все заказы поступившие после 19:00 будут обработаны на следующий день.</h5>
+    <div class="row">
+        {% for product in page_obj %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 shadow d-flex flex-column">
+                <h5 class="card-header text-center">{{ product.name }}</h5>
+
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top mx-auto d-block">
+
+                <div class="card-body d-flex flex-column">
+                    <p><strong>Цена: {{ product.price }} руб.</strong></p>
+                    <p>{{ product.short_description }}</p>
+                    <div class="mt-auto">
+                        <div class="product-rating mb-3">
+                            {{ product.avg_rating|star_rating }}
+                            <span class="ml-1">{{ product.avg_rating|floatformat:1 }}</span>
+                            <span class="ml-3">
+                                <a href="{% url 'catalog:product_reviews' product.id %}" style="font-size: 14px; text-decoration: none; color: blue;">
+                                    {{ product.review_count }}
+                                </a>
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <form action="{% url 'catalog:product_detail' product.id %}" method="get">
+                                    <input type="hidden" name="page" value="{{ page_number }}">
+                                    <button type="submit" class="btn btn-primary white-text">Подробнее</button>
+                                </form>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                {% if user.is_authenticated %}
+                                    {% if not user.is_staff %}
+                                        <a href="{% url 'orders:add_to_cart' product.id %}?page={{ page_obj.number }}" class="btn btn-success">В корзину</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'users:login' %}" class="btn btn-outline-success">В корзину</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not page_obj %}
+        <p class="text-center">В данный момент товары отсутствуют.</p>
+    {% endif %}
+
+    <nav aria-label="Page navigation example" class="mt-4">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

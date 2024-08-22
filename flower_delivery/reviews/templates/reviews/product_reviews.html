@@ -1,0 +1,97 @@
+{% extends 'reviews/review_layout.html' %}
+
+{% load custom_filters %}
+
+{% block extra_css %}
+<style>
+    .card-img-top {
+        width: 348px;  /* 100%; -Обеспечиваем растягивание картинки на всю ширину карточки */
+        height: 348px;
+        object-fit: cover;
+        border-radius: 15px;
+        padding: 10px;
+    }
+    .card {
+        border-radius: 5px;
+    }
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Обеспечиваем распределение контента внутри карточки */
+    }
+
+    .card-img-top {
+        width: 100%;  /* Обеспечиваем растягивание картинки на всю ширину карточки */
+        height: auto; /* Сохраняем пропорции изображения */
+        object-fit: cover;
+        border-radius: 15px;
+        padding: 10px;
+    }
+    .card {
+        border-radius: 5px;
+    }
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    @media (max-width: 768px) {
+        .card-img-top {
+            padding: 5px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block title %}
+<title>{{ product.name }}. Отзывы.</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Отзывы о букете "{{ product.name }}"</h2>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.short_description }}</p>
+                    <p class="card-text"><strong>Цена: {{ product.price }} руб.</strong></p>
+                    <div class="product-rating mb-3">
+                        {{ product.avg_rating|star_rating }}
+                        <span class="ml-1">{{ product.avg_rating|floatformat:1 }}</span>
+                        <span class="ml-1">{{ product.review_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="card mb-3">
+                         <div class="row">
+                            <div class="col-md-3">
+                                <div class="product-rating">
+                                    {{ review.rating|star_rating }}
+                                </div>
+                                <h6 class="card-title">{{ review.user.username }}</h6>
+                                <p class="card-subtitle mb-2 text-muted" style="font-size: 14px;">{{ review.created_at|date:"d.m.Y H:i" }}</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="card-text">{{ review.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">Отзывов пока нет. Будьте первым, кто оставит отзыв!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

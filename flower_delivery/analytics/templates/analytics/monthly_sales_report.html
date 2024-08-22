@@ -1,0 +1,128 @@
+{% extends 'admin_panel/admin_layout.html' %}
+
+{% block title %}
+    <title>{% if is_full_month %}
+                Отчёт о продажах за {{ month_name }} месяц
+            {% else %}
+                Отчёт о продажах за период с {{ start_date }} по {{ end_date }}
+            {% endif %}</title>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h3 class="text-center mb-4">
+            {% if is_full_month %}
+                Отчёт о продажах за {{ month_name }} месяц
+            {% else %}
+                Отчёт о продажах за период с {{ start_date }} по {{ end_date }}
+            {% endif %}
+        </h3>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5>Общая сумма продаж: <strong>{{ total_sales }} руб.</strong></h5>
+            <h5>Общая сумма расходов: <strong>{{ total_expenses }} руб.</strong></h5>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5>Прибыль: <strong>{{ profit }} руб.</strong></h5>
+            <a href="{% url 'admin_panel:admin_orders' %}" class="btn btn-secondary">Вернуться в заказы</a>
+        </div>
+        <div class="content-right mb-2">
+            <form method="get" class="form-inline ml-5">
+                <div class="input-group mr-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Начало</span>
+                    </div>
+                    <input type="text" class="form-control datepicker" id="start_date" name="start_date" value="{{ start_date }}" autocomplete="off">
+                </div>
+                <div class="input-group mr-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Окончание</span>
+                    </div>
+                    <input type="text" class="form-control datepicker" id="end_date" name="end_date" value="{{ end_date }}" autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary">Фильтр</button>
+            </form>
+        </div>
+        <div class="row mt-4">
+            {% for order in orders %}
+            <div class="col-12 mb-2">
+                 <div class="card" style="border: 2px solid #007bff; border-radius: 10px;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <ul class="list-unstyled">
+                                            <li><strong>№ {{ order.id }}</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <ul class="list-unstyled">
+                                            <li>Сумма: <strong>{{ order.total_cost }}</strong> ₽</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <strong>{{ order.order_date|date:"d.m.y" }}</strong>
+                                                <span class="ml-4">{{ order.order_date|date:"H:i" }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    {% for item in order.products %}
+                                        <div class="col-md-6">
+                                            <ul class="list-unstyled">
+                                                <li><strong>{{ item.product_name }}</strong></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-2">
+                                             <ul class="list-unstyled">
+                                                <li><strong>{{ item.quantity }}</strong> шт.</li>
+                                             </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                             <ul class="list-unstyled">
+                                                <li>{{ item.price }} ₽</li>
+                                             </ul>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% block extra_js %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.datepicker.setDefaults($.datepicker.regional["ru"]);
+            $(".datepicker").datepicker({
+                dateFormat: "dd.mm.yy",
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+    </script>
+    {% endblock %}
+
+{% endblock %}

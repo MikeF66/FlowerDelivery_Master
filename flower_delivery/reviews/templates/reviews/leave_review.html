@@ -1,0 +1,100 @@
+{% extends 'reviews/review_layout.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+    <title>{{ product.name }}. Оставить отзыв</title>
+{% endblock %}
+
+{% block extra_css %}
+    <!-- Добавьте этот стиль для звездочек -->
+<style>
+    .star {
+        font-size: 2em;
+        cursor: pointer;
+        color: lightgray;
+    }
+    .star.highlighted {
+        color: gold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center">Оставьте отзыв о продукте "{{ product.name }}" из заказа №{{ order.id }}</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group col-md-8 mx-auto">
+            <div class="text-center mb-4">
+                <label for="id_rating">{{ form.rating.label }}</label>
+                <div class="star-rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" name="rating" id="id_rating" value="0">
+            </div>
+
+            <div class="form-group text-center mb-4">
+                <label for="id_comment" class="form-label">{{ form.comment.label }}</label>
+                {{ form.comment|add_class:"form-control" }} <!-- Поле для ввода текста отзыва -->
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                <a href="{% url 'orders:user_orders' %}" class="btn btn-success">Вернуться в заказы</a>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Добавьте следующий скрипт внизу страницы -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating .star');
+        const ratingInput = document.getElementById('id_rating');
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                // Подсветка звезд при наведении
+                const value = this.getAttribute('data-value');
+                highlightStars(value);
+            });
+
+            star.addEventListener('click', function() {
+                // Установка рейтинга по клику
+                const value = this.getAttribute('data-value');
+                ratingInput.value = value;
+                highlightStars(value);
+            });
+
+            star.addEventListener('mouseout', function() {
+                // Убираем подсветку, если пользователь убрал курсор со звездочек
+                highlightStars(ratingInput.value);
+            });
+        });
+
+        function highlightStars(value) {
+            stars.forEach(star => {
+                if (star.getAttribute('data-value') <= value) {
+                    star.classList.add('highlighted');
+                } else {
+                    star.classList.remove('highlighted');
+                }
+            });
+        }
+
+        // Инициализация звездочек на основании текущего рейтинга (если есть)
+        highlightStars(ratingInput.value);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'users/user_layout.html' %}
+
+{% block title %}
+    <title>Страница входа</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Вход</h2>
+    <h5 class="text-center">Только авторизованный пользователь может наполнять корзину.</h5>
+    <h5 class="text-center">Пожалуйста, войдите в свой аккаунт или зарегистрируйтесь, если у вас еще нет аккаунта.</h5>
+
+    <!-- Отображение ошибок авторизации -->
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            Пожалуйста, исправьте ошибки в форме:
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="form-group col-md-8 mx-auto">
+            <label for="id_username">Email</label>
+            <input type="text" name="username" class="form-control" id="id_username" placeholder="Email" required>
+        </div>
+        <div class="form-group col-md-8 mx-auto">
+            <label for="id_password">Пароль</label>
+            <input type="password" name="password" class="form-control" id="id_password" placeholder="Пароль" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
